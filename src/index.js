@@ -7,32 +7,48 @@ const API_KEY = '32728432-4d3846f56f533eef252fc55ae';
 const BASE_URL = 'https://pixabay.com/api/';
 
 const formEl = document.querySelector('#search-form');
-const picContainerEl = document.querySelector('.gallery');
+const galleryEl = document.querySelector('.gallery');
+const loadMoreBtn = document.querySelector('.load-more');
 formEl.addEventListener('submit', onFormSubmit);
+loadMoreBtn.addEventListener('click', onLoadMoreClick);
+
+let currentPage = 1;
+let currentSearchValue = '';
+let picturesNumber = 0;
 
 function onFormSubmit(e) {
   e.preventDefault();
+  loadMoreBtn.classList.add('is-hidden');
+  galleryEl.innerHTML = '';
+  currentPage = 1;
+  currentSearchValue = formEl.elements.searchQuery.value
+    .trim()
+    .split(' ')
+    .join('+');
 
-  const valueForSearch = formEl.elements.searchQuery.value.trim();
-  console.log(valueForSearch);
-  // fetchPictures(valueForSearch);
-  createMarkup(fetchPictures, picContainerEl, valueForSearch);
+  addMarkup();
+  loadMoreBtn.classList.remove('is-hidden');
+}
+
+function onLoadMoreClick() {
+  currentPage += 1;
+  addMarkup();
 }
 
 async function fetchPictures(valueForSearch) {
-  const { data: pictures } = await axios(
-    `${BASE_URL}?key=${API_KEY}&q=${valueForSearch}&image_type=photo&orientation=horizontal&safesearch=true`
+  const {
+    data: { total, hits },
+  } = await axios(
+    `${BASE_URL}?key=${API_KEY}&q=${valueForSearch}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${currentPage}`
   );
-
-  return pictures;
 }
 
-async function createMarkup(pictures, el, valueForSearch) {
+async function addMarkup() {
   try {
-    el.innerHTML = '';
-    const { total, hits } = await fetchPictures(valueForSearch);
+    const { total, hits } = await fetchPictures(currentSearchValue);
     console.log(hits);
 
+    picturesNumber += hits.length;
     const markup = hits
       .map(picture => {
         return `<div class="photo-card">
@@ -56,7 +72,7 @@ async function createMarkup(pictures, el, valueForSearch) {
       })
       .join('');
 
-    el.insertAdjacentHTML('beforeend', markup);
+    galleryEl.insertAdjacentHTML('beforeend', markup);
   } catch (err) {
     console.log(err);
   }
