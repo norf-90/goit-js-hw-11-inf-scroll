@@ -2,54 +2,83 @@ import './css/styles.css';
 
 import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-const API_KEY = '32728432-4d3846f56f533eef252fc55ae';
-const BASE_URL = 'https://pixabay.com/api/';
+const refs = {
+  form: document.querySelector('#search-form'),
+  gallery: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('.load-more'),
+};
 
-const formEl = document.querySelector('#search-form');
-const galleryEl = document.querySelector('.gallery');
-const loadMoreBtn = document.querySelector('.load-more');
-formEl.addEventListener('submit', onFormSubmit);
-loadMoreBtn.addEventListener('click', onLoadMoreClick);
+let query = {};
 
-let currentPage = 1;
-let currentSearchValue = '';
-let picturesNumber = 0;
+refs.form.addEventListener('submit', onFormSubmit);
+// refs.loadMoreBtn.addEventListener('click', onLoadMoreClick);
 
-function onFormSubmit(e) {
+async function onFormSubmit(e) {
   e.preventDefault();
-  loadMoreBtn.classList.add('is-hidden');
-  galleryEl.innerHTML = '';
-  currentPage = 1;
-  currentSearchValue = formEl.elements.searchQuery.value
-    .trim()
-    .split(' ')
-    .join('+');
 
-  addMarkup();
-  loadMoreBtn.classList.remove('is-hidden');
+  query = new Query(refs);
+
+  query.hideLoadMoreBtn();
+  query.clearMarkup();
+  await query.fetchPictures();
+  query.createMarkup();
+  query.addMarkupToGallery();
+
+  query.checkAvailablePics();
+  query.increasePageByOne();
+  query.showLoadMoreBtn();
+
+  query.loadMoreBtn.addEventListener('click', query.onLoadMoreClick);
 }
 
-function onLoadMoreClick() {
-  currentPage += 1;
-  addMarkup();
-}
+// async function onLoadMoreClick() {
+//   await query.fetchPictures();
+//   query.createMarkup();
+//   query.addMarkupToGallery();
+//   query.increasePageByOne();
+//   query.decreaseAvailablePics();
 
-async function fetchPictures(valueForSearch) {
-  const {
-    data: { total, hits },
-  } = await axios(
-    `${BASE_URL}?key=${API_KEY}&q=${valueForSearch}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${currentPage}`
-  );
-}
+//   console.log(query);
+// }
 
-async function addMarkup() {
-  try {
-    const { total, hits } = await fetchPictures(currentSearchValue);
-    console.log(hits);
+class Query {
+  constructor({ form, gallery, loadMoreBtn }) {
+    this.API_KEY = '32728432-4d3846f56f533eef252fc55ae';
+    this.BASE_URL = 'https://pixabay.com/api/';
+    this.page = 1;
+    this.perPage = 40;
 
-    picturesNumber += hits.length;
-    const markup = hits
+    this.form = form;
+    this.gallery = gallery;
+    this.loadMoreBtn = loadMoreBtn;
+
+    this.value = this.form.elements.searchQuery.value
+      .trim()
+      .split(' ')
+      .join('+');
+    this.availabePics = null;
+    this.hits = null;
+    this.markup = null;
+  }
+
+  async fetchPictures() {
+    try {
+      const {
+        data: { totalHits, hits },
+      } = await axios(
+        `${this.BASE_URL}?key=${this.API_KEY}&q=${this.value}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${this.page}`
+      );
+      this.availabePics = totalHits;
+      this.hits = hits;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  createMarkup() {
+    this.markup = this.hits
       .map(picture => {
         return `<div class="photo-card">
       <img src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="400"/>
@@ -71,9 +100,41 @@ async function addMarkup() {
     </div>`;
       })
       .join('');
+  }
 
-    galleryEl.insertAdjacentHTML('beforeend', markup);
-  } catch (err) {
-    console.log(err);
+  clearMarkup() {
+    this.gallery.innerHTML = '';
+  }
+
+  addMarkupToGallery() {
+    this.gallery.insertAdjacentHTML('beforeend', this.markup);
+  }
+
+  increasePageByOne() {
+    this.page += 1;
+    console.log(`page: ${this.page}`);
+  }
+
+  showLoadMoreBtn() {
+    this.loadMoreBtn.classList.remove('is-hidden');
+  }
+
+  hideLoadMoreBtn() {
+    this.loadMoreBtn.classList.add('is-hidden');
+    console.log('hide loadmore btn');
+  }
+
+  async onLoadMoreClick() {
+    await query.fetchPictures();
+    query.createMarkup();
+    query.addMarkupToGallery();
+    query.increasePageByOne();
+  }
+
+  checkAvailablePics() {
+    if (this.page * this.perPage >= this.availabePics) {
+      this.hideLoadMoreBtn();
+      Notify.info("We're sorry, but you've reached the end of search results.");
+    }
   }
 }
