@@ -2,6 +2,7 @@ import './css/styles.css';
 
 import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const refs = {
@@ -10,19 +11,19 @@ const refs = {
   loadMoreBtn: document.querySelector('.load-more'),
 };
 
-let query = {};
+// let query = {};
 
 refs.form.addEventListener('submit', onFormSubmit);
-// refs.loadMoreBtn.addEventListener('click', onLoadMoreClick);
 
 async function onFormSubmit(e) {
   e.preventDefault();
 
-  query = new Query(refs);
+  const query = new Query(refs);
 
   query.hideLoadMoreBtn();
   query.clearMarkup();
   await query.fetchPictures();
+  query.showTotal();
   query.createMarkup();
   query.addMarkupToGallery();
 
@@ -30,18 +31,11 @@ async function onFormSubmit(e) {
   query.increasePageByOne();
   query.showLoadMoreBtn();
 
-  query.loadMoreBtn.addEventListener('click', query.onLoadMoreClick);
+  query.loadMoreBtn.addEventListener(
+    'click',
+    query.onLoadMoreClick.bind(query)
+  );
 }
-
-// async function onLoadMoreClick() {
-//   await query.fetchPictures();
-//   query.createMarkup();
-//   query.addMarkupToGallery();
-//   query.increasePageByOne();
-//   query.decreaseAvailablePics();
-
-//   console.log(query);
-// }
 
 class Query {
   constructor({ form, gallery, loadMoreBtn }) {
@@ -111,6 +105,7 @@ class Query {
   }
 
   increasePageByOne() {
+    console.log('increasing by one ...');
     this.page += 1;
     console.log(`page: ${this.page}`);
   }
@@ -121,20 +116,26 @@ class Query {
 
   hideLoadMoreBtn() {
     this.loadMoreBtn.classList.add('is-hidden');
-    console.log('hide loadmore btn');
   }
 
   async onLoadMoreClick() {
-    await query.fetchPictures();
-    query.createMarkup();
-    query.addMarkupToGallery();
-    query.increasePageByOne();
+    await this.fetchPictures();
+    this.createMarkup();
+    this.addMarkupToGallery();
+    this.checkAvailablePics();
+    this.increasePageByOne();
   }
 
   checkAvailablePics() {
-    if (this.page * this.perPage >= this.availabePics) {
-      this.hideLoadMoreBtn();
-      Notify.info("We're sorry, but you've reached the end of search results.");
+    console.log('cheking');
+    if (this.page * this.perPage < this.availabePics) {
+      return;
     }
+    this.hideLoadMoreBtn();
+    Notify.info("We're sorry, but you've reached the end of search results.");
+  }
+
+  showTotal() {
+    Notify.success(`Hooray! We found ${this.availabePics} images.`);
   }
 }
