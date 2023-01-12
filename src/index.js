@@ -19,6 +19,7 @@ async function onFormSubmit(e) {
   e.preventDefault();
 
   const query = new Query(refs);
+  query.lightbox = new SimpleLightbox('.gallery a');
 
   query.hideLoadMoreBtn();
   query.clearMarkup();
@@ -26,15 +27,14 @@ async function onFormSubmit(e) {
   query.showTotal();
   query.createMarkup();
   query.addMarkupToGallery();
-
+  query.lightbox.refresh();
+  refs.gallery.onscroll = addSmoozeScroll;
   query.checkAvailablePics();
   query.increasePageByOne();
-  query.showLoadMoreBtn();
 
-  query.loadMoreBtn.addEventListener(
-    'click',
-    query.onLoadMoreClick.bind(query)
-  );
+  document.addEventListener('scroll', addSmoozeScroll);
+
+  // query.scrollToEnd();
 }
 
 class Query {
@@ -66,6 +66,7 @@ class Query {
       );
       this.availabePics = totalHits;
       this.hits = hits;
+      if (this.hits.length) this.showLoadMoreBtn();
     } catch (err) {
       console.error(err);
     }
@@ -74,7 +75,7 @@ class Query {
   createMarkup() {
     this.markup = this.hits
       .map(picture => {
-        return `<div class="photo-card">
+        return `<a href="${picture.largeImageURL}"><div class="photo-card">
       <img src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="400"/>
       <div class="info">
         <p class="info-item">
@@ -91,7 +92,7 @@ class Query {
           <b>Downloads</b> <span>${picture.downloads}</span>
         </p>
       </div>
-    </div>`;
+    </div></a>`;
       })
       .join('');
   }
@@ -122,13 +123,17 @@ class Query {
     await this.fetchPictures();
     this.createMarkup();
     this.addMarkupToGallery();
+    this.lightbox.refresh();
     this.checkAvailablePics();
     this.increasePageByOne();
+
+    // this.scrollToEnd();
   }
 
   checkAvailablePics() {
     console.log('cheking');
-    if (this.page * this.perPage < this.availabePics) {
+    // if (this.availabePics)
+    if (this.page * this.perPage < this.availabePics || !this.availabePics) {
       return;
     }
     this.hideLoadMoreBtn();
@@ -136,6 +141,31 @@ class Query {
   }
 
   showTotal() {
+    if (!this.hits.length) {
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
     Notify.success(`Hooray! We found ${this.availabePics} images.`);
   }
+
+  scrollToEnd() {
+    const { top: yCoord } = document
+      .querySelector('.gallery')
+      .lastElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: yCoord * 2,
+      behavior: 'smooth',
+    });
+  }
+}
+
+function addSmoozeScroll() {
+  const { top: yCoord } =
+    refs.gallery.firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: -yCoord * 2,
+    behavior: 'smooth',
+  });
 }
