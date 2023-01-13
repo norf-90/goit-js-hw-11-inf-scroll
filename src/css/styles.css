@@ -41,6 +41,10 @@ body {
     margin: 0 auto;
 }
 
+.gallery>a {
+    text-decoration: none;
+}
+
 .gallery {
     margin: 30px;
     display: flex;

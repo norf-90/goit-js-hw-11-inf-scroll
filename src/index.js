@@ -4,14 +4,13 @@ import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import throttle from 'lodash.throttle';
 
 const refs = {
   form: document.querySelector('#search-form'),
   gallery: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
 };
-
-// let query = {};
 
 refs.form.addEventListener('submit', onFormSubmit);
 
@@ -32,9 +31,41 @@ async function onFormSubmit(e) {
   query.checkAvailablePics();
   query.increasePageByOne();
 
-  document.addEventListener('scroll', addSmoozeScroll);
+  query.loadMoreBtn.addEventListener(
+    'click',
+    query.onLoadMoreClick.bind(query)
+  );
 
-  // query.scrollToEnd();
+  // --- Add smooth scroll ---
+
+  const smoothScroll = new SmoothScroll(refs.gallery);
+
+  document.addEventListener(
+    'wheel',
+    throttle(smoothScroll.onMouseWheel.bind(smoothScroll), 100)
+  );
+}
+
+class SmoothScroll {
+  constructor(gallery) {
+    this.cardHeight = gallery.firstElementChild.getBoundingClientRect().height;
+  }
+
+  onMouseWheel(e) {
+    console.log(this.cardHeight);
+    if (e.deltaY > 0) {
+      window.scrollBy({
+        top: this.cardHeight * 30,
+        behavior: 'smooth',
+      });
+    }
+    if (e.deltaY < 0) {
+      window.scrollBy({
+        top: -this.cardHeight * 30,
+        behavior: 'smooth',
+      });
+    }
+  }
 }
 
 class Query {
