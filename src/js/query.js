@@ -85,7 +85,11 @@ export default class Query {
   }
 
   checkAvailablePics() {
-    if (this.page * this.perPage < this.availabePics || !this.availabePics) {
+    if (
+      this.page * this.perPage < this.availabePics ||
+      !this.availabePics ||
+      this.availabePics > this.perPage
+    ) {
       return;
     }
     this.hideLoadMoreBtn();

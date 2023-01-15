@@ -25,12 +25,15 @@ async function onFormSubmit(e) {
   await query.fetchPictures();
   query.showTotal();
   query.createMarkup();
+  query.checkAvailablePics();
   query.lightbox = new SimpleLightbox('.gallery a');
 
-  query.loadMoreBtn.addEventListener(
-    'click',
-    query.onLoadMoreClick.bind(query)
-  );
+  if (query.availabePics > query.perPage) {
+    query.loadMoreBtn.addEventListener(
+      'click',
+      query.onLoadMoreClick.bind(query)
+    );
+  }
 
   const customScroll = new CustomScroll(refs.gallery);
 
