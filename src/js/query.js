@@ -32,7 +32,6 @@ export default class Query {
       this.hits = hits;
 
       this.page += 1;
-      if (this.hits.length) this.showLoadMoreBtn();
     } catch (err) {
       console.error(err);
     }
@@ -69,20 +68,12 @@ export default class Query {
     this.gallery.innerHTML = '';
   }
 
-  showLoadMoreBtn() {
-    this.loadMoreBtn.classList.remove('is-hidden');
-  }
-
-  hideLoadMoreBtn() {
-    this.loadMoreBtn.classList.add('is-hidden');
-  }
-
-  async onLoadMoreClick() {
-    await this.fetchPictures();
-    this.createMarkup();
-    this.lightbox.refresh();
-    this.checkAvailablePics();
-  }
+  // async onLoadMoreClick() {
+  //   await this.fetchPictures();
+  //   this.createMarkup();
+  //   this.lightbox.refresh();
+  //   this.checkAvailablePics();
+  // }
 
   checkAvailablePics() {
     if (

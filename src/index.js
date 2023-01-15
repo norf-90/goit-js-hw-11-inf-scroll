@@ -20,7 +20,6 @@ async function onFormSubmit(e) {
 
   const query = new Query(refs);
 
-  query.hideLoadMoreBtn();
   query.clearMarkup();
   await query.fetchPictures();
   query.showTotal();
