@@ -2,7 +2,6 @@ import './css/styles.css';
 
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import throttle from 'lodash.throttle';
 
 import Query from './js/query';
 import CustomScroll from './js/custom-scroll';
@@ -10,7 +9,6 @@ import CustomScroll from './js/custom-scroll';
 const refs = {
   form: document.querySelector('#search-form'),
   gallery: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-more'),
 };
 
 refs.form.addEventListener('submit', onFormSubmit);

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export default class Query {
-  constructor({ form, gallery, loadMoreBtn }) {
+  constructor({ form, gallery }) {
     this.API_KEY = '32728432-4d3846f56f533eef252fc55ae';
     this.BASE_URL = 'https://pixabay.com/api/';
     this.page = 1;
@@ -10,7 +10,6 @@ export default class Query {
 
     this.form = form;
     this.gallery = gallery;
-    this.loadMoreBtn = loadMoreBtn;
 
     this.value = this.form.elements.searchQuery.value
       .trim()
