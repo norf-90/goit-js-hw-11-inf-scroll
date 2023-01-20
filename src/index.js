@@ -30,7 +30,6 @@ const lightbox = new SimpleLightbox('.gallery a');
 
 // Add infinite scroll
 const observer = new IntersectionObserver(onIntersect, options);
-observer.observe(refs.guard);
 
 async function onIntersect(entries, observer) {
   entries.forEach(entry => {
@@ -41,11 +40,11 @@ async function onIntersect(entries, observer) {
 
       page += 1;
       fetchPictures(page)
-        .then(data => {
-          createMarkup(data);
+        .then(({ totalHits, hits }) => {
+          createMarkup({ totalHits, hits });
           lightbox.refresh();
 
-          if (data.totalHits <= page * perPage) {
+          if (totalHits <= page * perPage && totalHits > 0) {
             observer.unobserve(refs.guard);
             Notify.info(
               "We're sorry, but you've reached the end of search results."
@@ -74,9 +73,7 @@ async function onFormSubmit(e) {
     createMarkup(data);
     lightbox.refresh();
 
-    if (data.totalHits <= page * perPage) {
-      Notify.info("We're sorry, but you've reached the end of search results.");
-    }
+    observer.observe(refs.guard);
   });
 }
 
@@ -94,18 +91,18 @@ async function fetchPictures() {
   return { totalHits, hits };
 }
 
-function showTotal(data) {
-  if (!data.totalHits) {
-    Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
+function showTotal({ totalHits }) {
+  if (totalHits) {
+    Notify.success(`Hooray! We found ${totalHits} images.`);
     return;
   }
-  Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  Notify.failure(
+    'Sorry, there are no images matching your search query. Please try again.'
+  );
 }
 
-function createMarkup(data) {
-  const markup = data.hits
+function createMarkup({ hits }) {
+  const markup = hits
     .map(picture => {
       return `<a href="${picture.largeImageURL}"><div class="photo-card">
       <img src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="400"/>
@@ -131,16 +128,16 @@ function createMarkup(data) {
   refs.gallery.insertAdjacentHTML('beforeend', markup);
 }
 
-function onMouseWheel(e) {
-  if (e.deltaY > 0) {
+function onMouseWheel(evt) {
+  if (evt.deltaY > 0) {
     window.scrollBy({
       top: 2000,
       behavior: 'smooth',
     });
   }
-  if (e.deltaY < 0) {
+  if (evt.deltaY < 0) {
     window.scrollBy({
-      top: -600,
+      top: -2000,
       behavior: 'smooth',
     });
   }
