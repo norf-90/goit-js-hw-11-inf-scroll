@@ -105,7 +105,7 @@ function createMarkup({ hits }) {
   const markup = hits
     .map(picture => {
       return `<a href="${picture.largeImageURL}"><div class="photo-card">
-      <img src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="400"/>
+      <img class="photo-img" src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="300"/>
       <div class="info">
         <p class="info-item">
           <b>Likes</b> <span>${picture.likes}</span>
@@ -131,13 +131,13 @@ function createMarkup({ hits }) {
 function onMouseWheel(evt) {
   if (evt.deltaY > 0) {
     window.scrollBy({
-      top: 2000,
+      top: 600,
       behavior: 'smooth',
     });
   }
   if (evt.deltaY < 0) {
     window.scrollBy({
-      top: -2000,
+      top: -600,
       behavior: 'smooth',
     });
   }
