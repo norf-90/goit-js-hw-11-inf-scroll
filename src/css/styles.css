@@ -30,13 +30,6 @@ body {
     color: #c5c5c5;
 }
 
-/* 
-.search-form>input:focus {
-    text-shadow: 2px 2px 4px #202020,
-        -2px -2px 4px #828282;
-} */
-
-
 
 .search-form>input:focus {
     background: #515151;
@@ -56,9 +49,10 @@ body {
     margin: 0 0 0 20px;
     padding: 0 30px;
 
-    font-family: monospace;
+    font-family: 'Staatliches', cursive;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 25px;
+    letter-spacing: 6px;
     color: #303030;
 
     border: none;
@@ -68,7 +62,7 @@ body {
     box-shadow: 9px 9px 15px #303030,
         -9px -19px 15px #727272;
     cursor: pointer;
-    transition: color 200ms linear, box-shadow 50ms linear, text-shadow 200ms linear;
+    transition: color 200ms linear, box-shadow 50ms linear, text-shadow 50ms linear;
 }
 
 .search-form>button:hover {
@@ -79,6 +73,10 @@ body {
 .search-form>button:active {
     box-shadow: 5px 5px 10px #303030,
         -5px -5px 10px #727272;
+    text-shadow: 0 0 2px #ff652d,
+        2px 2px 4px #202020,
+        -2px -2px 4px #828282;
+    ;
 }
 
 
@@ -100,7 +98,6 @@ body {
 .gallery>a {
     display: block;
     flex-basis: calc((100% - 3 * 40px) / 4);
-
     text-decoration: none;
     color: inherit;
 }
@@ -112,30 +109,39 @@ body {
 .photo-card {
     padding: 20px;
     border-radius: 20px;
-
-
-
-    background: linear-gradient(145deg, #494949, #575757);
-    box-shadow: 3px 3px 7px #272727,
-        -3px -3px 7px #7b7b7b;
-    transition: box-shadow 200ms;
+    background: 515151;
+    font-size: 15px;
+    letter-spacing: 1px;
+    font-family: 'Staatliches', cursive;
+    text-shadow: 1px 1px 2px #202020,
+        -1px -1px 2px #828282;
+    transition: box-shadow 150ms, text-shadow 150ms;
 }
 
 .photo-card:hover {
     background: linear-gradient(145deg, #494949, #575757);
-    box-shadow: 7px 7px 14px #272727,
-        -7px -7px 14px #7b7b7b;
+    box-shadow: 3px 3px 7px #272727,
+        -3px -3px 14px #7b7b7b;
+    text-shadow: none;
 }
 
 .photo-card:active {
     background: #515151;
-    box-shadow: inset 5px 5px 10px #272727,
-        inset -5px -5px 10px #7b7b7b;
+    text-shadow: 1px 1px 2px #202020,
+        -1px -1px 2px #828282;
+    box-shadow: none;
+
+}
+
+.photo-card span {
+    font-family: 'Staatliches', cursive;
+    font-size: 18px;
 }
 
 .photo-card:hover span {
+    font-family: 'Staatliches', cursive;
+    font-size: 18px;
     color: #ff652d;
-    text-shadow: 0 0 2px #ff652d;
 }
 
 .photo-img {
