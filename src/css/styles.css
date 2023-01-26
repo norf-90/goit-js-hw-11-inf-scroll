@@ -10,20 +10,31 @@ body {
     height: 50px;
     padding: 0 30px;
 
-    font-family: monospace;
-    font-size: 30px;
+    font-family: 'Staatliches', cursive;
+    font-size: 25px;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 7px;
     color: #ff652d;
+    /* text-align: center; */
 
     border-radius: 50px;
     background: #515151;
     outline: none;
-    transition: box-shadow 200ms;
+    transition: box-shadow 200ms,
+        text-shadow 200ms;
 
-    text-shadow: 1px 1px 1px #202020,
-        -1px -1px 1px #828282;
+
 }
+
+.search-form>input::placeholder {
+    color: #c5c5c5;
+}
+
+/* 
+.search-form>input:focus {
+    text-shadow: 2px 2px 4px #202020,
+        -2px -2px 4px #828282;
+} */
 
 
 
@@ -31,6 +42,9 @@ body {
     background: #515151;
     box-shadow: inset 5px 5px 10px #303030,
         inset -5px -5px 10px #727272;
+
+    text-shadow: 2px 2px 4px #202020,
+        -2px -2px 4px #828282;
 }
 
 
