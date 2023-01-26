@@ -105,7 +105,7 @@ function createMarkup({ hits }) {
   const markup = hits
     .map(picture => {
       return `<a href="${picture.largeImageURL}"><div class="photo-card">
-      <img class="photo-img" src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" width="300"/>
+      <img class="photo-img" src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy" />
       <div class="info">
         <p class="info-item">
           <b>Likes</b> <span>${picture.likes}</span>
